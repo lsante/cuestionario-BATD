@@ -75,6 +75,7 @@
   textarea:focus { outline: none; border-color: var(--green-mid); background: #fff; }
   textarea.open-locked { background: var(--surface2) !important; border-color: var(--border) !important; color: var(--muted) !important; cursor: not-allowed; resize: none; }
 
+  .open-hint { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
   .lock-notice { font-size: 12px; color: var(--green); margin-top: 6px; display: none; font-weight: 500; }
 
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid; }
@@ -105,7 +106,7 @@
   <header>
     <p class="course-label">Métodos y Técnicas Psicoterapéuticas · VIII Ciclo</p>
     <h1>Protocolo BATD — Lejuez et al. (2011)</h1>
-    <p class="subtitle">Cuestionario de repaso sobre fundamentos teóricos y procedimiento clínico de la Activación Conductual. En las preguntas cerradas verás la retroalimentación al instante. En las abiertas, escribe tu respuesta, confírmala y luego podrás ver los criterios.</p>
+    <p class="subtitle">Cuestionario de repaso sobre fundamentos teóricos y procedimiento clínico de la Activación Conductual. En las preguntas cerradas verás la retroalimentación al instante. En las abiertas, escribe tu respuesta y pulsa «Verificar respuesta»: verás los criterios de una buena respuesta y ya no podrás modificar la tuya.</p>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
   </header>
 
@@ -180,7 +181,8 @@
     <p class="q-text">Una consultante de 28 años llega a la sesión 5 del protocolo. La semana anterior planificó tres actividades: salir a caminar cada mañana, llamar a una amiga y preparar una comida nueva. Al revisar, dice que no realizó ninguna de las tres porque <em>"no tenía energía"</em> y <em>"para qué si igual no voy a sentir nada."</em><br><br>Identifica el tipo de obstáculo presente y describe brevemente cómo lo abordarías desde el protocolo BATD en esta sesión.</p>
     <textarea id="open4" placeholder="Escribe tu respuesta aquí..." oninput="handleOpenInput(4)"></textarea>
     <span class="lock-notice" id="notice4">✓ Respuesta guardada. Ya no puedes editarla.</span>
-    <button class="btn btn-criteria" id="btnCr4" onclick="lockAndShow(4)" disabled>Ver criterios de respuesta</button>
+    <button class="btn btn-criteria" id="btnCr4" onclick="lockAndShow(4)" disabled>Verificar respuesta</button>
+    <p class="open-hint" id="hint4">Escribe al menos 20 caracteres para activar el botón. Al verificar verás los criterios de respuesta y ya no podrás modificar lo que has escrito.</p>
     <div class="criteria-box" id="cr4">
       <p class="cb-title">Criterios de una buena respuesta</p>
       <ul>
@@ -203,7 +205,8 @@
     <p class="q-text">El formulario AVVA (Áreas Vitales, Valores y Actividades) es considerado el instrumento más importante de las primeras sesiones del protocolo. Explica por qué un AVVA mal construido compromete todo el tratamiento posterior. Usa como base la lógica de articulación entre las sesiones 1, 2, 3 y las sesiones 4–6.</p>
     <textarea id="open5" placeholder="Desarrolla tu respuesta aquí..." style="min-height:110px;" oninput="handleOpenInput(5)"></textarea>
     <span class="lock-notice" id="notice5">✓ Respuesta guardada. Ya no puedes editarla.</span>
-    <button class="btn btn-criteria" id="btnCr5" onclick="lockAndShow(5)" disabled>Ver criterios de respuesta</button>
+    <button class="btn btn-criteria" id="btnCr5" onclick="lockAndShow(5)" disabled>Verificar respuesta</button>
+    <p class="open-hint" id="hint5">Escribe al menos 20 caracteres para activar el botón. Al verificar verás los criterios de respuesta y ya no podrás modificar lo que has escrito.</p>
     <div class="criteria-box" id="cr5">
       <p class="cb-title">Criterios de una buena respuesta</p>
       <ul>
@@ -225,7 +228,8 @@
     <p class="q-text">Estás planificando la sesión 10 con un consultante que, al llegar, te dice que no quiere que la terapia termine: <em>"Prefiero seguir viniendo, me siento más seguro aquí."</em> El consultante ha completado el protocolo y sus indicadores de activación y estado de ánimo han mejorado significativamente.<br><br>¿Cómo valorarías clínicamente esta situación y qué considerarías para tomar una decisión terapéutica?</p>
     <textarea id="open6" placeholder="Desarrolla tu análisis aquí..." style="min-height:110px;" oninput="handleOpenInput(6)"></textarea>
     <span class="lock-notice" id="notice6">✓ Respuesta guardada. Ya no puedes editarla.</span>
-    <button class="btn btn-criteria" id="btnCr6" onclick="lockAndShow(6)" disabled>Ver criterios de respuesta</button>
+    <button class="btn btn-criteria" id="btnCr6" onclick="lockAndShow(6)" disabled>Verificar respuesta</button>
+    <p class="open-hint" id="hint6">Escribe al menos 20 caracteres para activar el botón. Al verificar verás los criterios de respuesta y ya no podrás modificar lo que has escrito.</p>
     <div class="criteria-box" id="cr6">
       <p class="cb-title">Criterios de una buena respuesta</p>
       <ul>
@@ -286,15 +290,19 @@
     updateProgress();
   }
 
-  function lockAndShow(num) {
+  function lockAndShow(num, skipConfirm) {
     const ta = document.getElementById('open' + num);
     const btn = document.getElementById('btnCr' + num);
     const notice = document.getElementById('notice' + num);
+    const hint = document.getElementById('hint' + num);
     const cr = document.getElementById('cr' + num);
+    if (!skipConfirm && !confirm('Al verificar verás los criterios de respuesta y ya no podrás modificar lo que has escrito. ¿Quieres continuar?')) return;
     ta.classList.add('open-locked');
     ta.setAttribute('readonly', true);
     if (notice) notice.style.display = 'block';
+    if (hint) hint.style.display = 'none';
     cr.style.display = 'block';
+    btn.disabled = false;
     btn.textContent = 'Ocultar criterios';
     btn.onclick = function() {
       cr.style.display = cr.style.display === 'block' ? 'none' : 'block';
@@ -349,12 +357,8 @@
 
     [4,5,6].forEach(num => {
       const ta = document.getElementById('open' + num);
-      const cr = document.getElementById('cr' + num);
-      const notice = document.getElementById('notice' + num);
-      const btn = document.getElementById('btnCr' + num);
-      if (ta && !ta.hasAttribute('readonly')) { ta.classList.add('open-locked'); ta.setAttribute('readonly', true); if (notice) notice.style.display = 'block'; }
-      if (cr) cr.style.display = 'block';
-      if (btn) { btn.textContent = 'Ocultar criterios'; btn.disabled = false; }
+      if (!ta.hasAttribute('readonly')) lockAndShow(num, true);
+      else document.getElementById('cr' + num).style.display = 'block', document.getElementById('btnCr' + num).textContent = 'Ocultar criterios';
     });
     const ta7 = document.getElementById('open7');
     if (ta7 && !ta7.hasAttribute('readonly')) { ta7.classList.add('open-locked'); ta7.setAttribute('readonly', true); }
